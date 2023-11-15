@@ -33,7 +33,7 @@ int print_char(va_list types, char buffer[],
 int print_string(va_list types, char buffer[],
 	int flags, int width, int precision, int size)
 {
-	int length = 0, b;
+	int length = 0, i;
 	char *str = va_arg(types, char *);
 
 	UNUSED(buffer);
@@ -59,13 +59,13 @@ int print_string(va_list types, char buffer[],
 		if (flags & F_MINUS)
 		{
 			write(1, &str[0], length);
-			for (b = width - length; b > 0; b--)
+			for (i = width - length; i > 0; i--)
 				write(1, " ", 1);
 			return (width);
 		}
 		else
 		{
-			for (b = width - length; b > 0; b--)
+			for (i = width - length; i > 0; i--)
 				write(1, " ", 1);
 			write(1, &str[0], length);
 			return (width);
@@ -111,7 +111,7 @@ int print_percent(va_list types, char buffer[],
 int print_int(va_list types, char buffer[],
 	int flags, int width, int precision, int size)
 {
-	int b = BUFF_SIZE - 2;
+	int i = BUFF_SIZE - 2;
 	int is_negative = 0;
 	long int n = va_arg(types, long int);
 	unsigned long int num;
@@ -119,7 +119,7 @@ int print_int(va_list types, char buffer[],
 	n = convert_size_number(n, size);
 
 	if (n == 0)
-		buffer[b--] = '0';
+		buffer[i--] = '0';
 
 	buffer[BUFF_SIZE - 1] = '\0';
 	num = (unsigned long int)n;
@@ -132,13 +132,13 @@ int print_int(va_list types, char buffer[],
 
 	while (num > 0)
 	{
-		buffer[b--] = (num % 10) + '0';
+		buffer[i--] = (num % 10) + '0';
 		num /= 10;
 	}
 
-	b++;
+	i++;
 
-	return (write_number(is_negative, b, buffer, flags, width, precision, size));
+	return (write_number(is_negative, i, buffer, flags, width, precision, size));
 }
 
 /************************* PRINT BINARY *************************/
@@ -155,7 +155,7 @@ int print_int(va_list types, char buffer[],
 int print_binary(va_list types, char buffer[],
 	int flags, int width, int precision, int size)
 {
-	unsigned int n, m, b, sum;
+	unsigned int n, m, i, sum;
 	unsigned int a[32];
 	int count;
 
@@ -168,17 +168,17 @@ int print_binary(va_list types, char buffer[],
 	n = va_arg(types, unsigned int);
 	m = 2147483648; /* (2 ^ 31) */
 	a[0] = n / m;
-	for (b = 1; b < 32; b++)
+	for (i = 1; i < 32; i++)
 	{
 		m /= 2;
-		a[b] = (n / m) % 2;
+		a[i] = (n / m) % 2;
 	}
-	for (b = 0, sum = 0, count = 0; b < 32; b++)
+	for (i = 0, sum = 0, count = 0; i < 32; i++)
 	{
-		sum += a[b];
-		if (sum || b == 31)
+		sum += a[i];
+		if (sum || i == 31)
 		{
-			char z = '0' + a[b];
+			char z = '0' + a[i];
 
 			write(1, &z, 1);
 			count++;
